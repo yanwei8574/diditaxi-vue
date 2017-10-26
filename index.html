@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<title>滴滴出行大礼包</title>
+<meta name="description" content="滴滴让出行更美好">
+<link rel="stylesheet" type="text/css" href="./css/free-flex.css">
+<link rel="stylesheet" type="text/css" href="./css/style.css">
+</head>
+<style>
+  .fade-enter-active {
+      transition: all .2s ease;
+  }
+  .fade-enter, .fade-leave-to /* .fade-leave-active in below version 2.1.8 */ {
+      opacity: 0;
+  }
+  .scale-enter-active {
+      transition: all .4s ease;
+  }
+  .scale-enter, .scale-leave-to /* .fade-leave-active in below version 2.1.8 */ {
+      opacity: 0;
+      transform: scale(0.96);
+  }
+</style>
+<body>
+<div id="app">
+  <div id="main">
+    <div class="top-header">
+      <div class="img-holder"></div>
+    </div>
+
+    <!--初始状态-->
+    <div id="main-content" v-if="!show">
+      <section id="main-logo"><img src="./images/photo.png" id="main-logo-img"></section>
+      <p id="main-title">{{ title }}</p>
+      <p id="main-sub">滴滴，让出行更美好</p>
+      <section class="main-wrap">
+         <input type="tel" id="main-phone" maxlength="11" placeholder="输入手机号，领取优惠券" v-model="phone">
+      </section>
+      <section class="main-wrap">
+        <button type="button" class="main-btn" :class="{ active : btnActive }" :disabled="!btnActive" @click="getBtnClick">点击领取乘车优惠</button>
+      </section>
+      <section id="main-tips">
+        <label><input id="main-tips-checkbox" type="checkbox" checked="checked">
+		    我已阅读并同意滴滴出行的
+		    </label>
+        <a id="main-tips-link" href="activity-rules.html">[活动规则]</a>
+      </section>
+    </div>
+    <!--调用接口返回状态0-->
+    <div id="receive-content" v-else-if="phone === '18565091288'">
+      <div id="receive-amount">
+        <section data-v-85105a9a="" id="receive-amount-wrap">
+          <p id="receive-amount-text">恭喜获得价值{{ amount }}元<br>滴滴出行券礼包</p>
+        </section>
+        <div style="padding-top: 27.3333%;"></div>
+      </div>
+      <div id="receive-container">
+        <p id="receive-title">{{ title }}</p>
+        <p id="receive-desc">出行券已放入账号: <span id="receive-phone">{{ phone }}</span></p>
+        <section class="receive-wrap"><span id="receive-btn-partner">赚更多优惠</span></section>
+        <section id="voucher">
+          <ul id="voucher-wrap">
+            <li class="voucher-list voucher-list-zhuanche voucher-has-discount" v-for="item in coupon_list">
+              <img :src="item.valid_logo_url" class="voucher-list-bg">
+              <div class="voucher-list-wrap">
+                <div class="vouhcer-list-info">
+                  <p class="voucher-list-name">{{item.name}}</p>
+                  <p class="voucher-list-time">有效期至：{{item.deadline}}</p>
+                </div>
+                <div class="voucher-list-amount">
+                  <span class="voucher-list-int">{{ item.discount | cutBefore }}</span>
+                  <span class="voucher-list-float">.{{item.discount | cutAfter}}</span>
+                  <span class="voucher-list-zhe">折</span>
+              </div>
+              <p class="voucher-remark">{{item.remark}}</p>
+              </div>
+            </li>
+          </ul>
+        </section>
+        <p id="receive-tip">若出行券未到账，将自动在24小时补发。同一用户限使用1份礼包。（同一设备号、支付账号、银行卡号等均视为同一用户）</p>
+      </div>
+    </div>
+    <!--调用接口返回状态6-->
+    <div id="main-content" v-else>
+      <section id="main-logo"><img src="./images/photo.png" id="main-logo-img"></section>
+      <div id="error-container">
+        <p id="error-title">{{ errmsg }}</p>
+        <section class="error-wrap"><span id="error-btn-partner">赚更多优惠</span></section>
+      </div>
+      <section id="main-tips">
+        <label><input id="main-tips-checkbox" type="checkbox" checked="checked">
+		    我已阅读并同意滴滴出行的
+		    </label>
+        <a id="main-tips-link" href="activity-rules.html">[活动规则]</a>
+      </section>
+    </div>
+
+  </div>
+  <footer id="footer">
+    <img id="footer-logo" src="./images/footer_logo.png">
+    <p id="footer-tips">客服电话 <a id="footer-link" href="tel:4000000999">400-000-0999</a></p>
+  </footer>
+
+  <!-- 弹出框 -->
+	<transition name="scale">
+    <div class="didi-dialog-wall" v-if="modalShow">
+        <modal :modal-msg="modalMsg" v-on:modal-click="modalClick"></modal>
+    </div>
+	</transition>
+</div>
+<script src="./js/vue.min.js"></script>
+<script src="./js/axios.min.js"></script>
+<script src="./js/component.js"></script>
+<script type="text/javascript">
+  /*Vue.filter('cutBefore', function (v) {
+     return v.toString().substring(0,1);//返回的数据类型是Number，需要转换成字符串才能截取
+  });*/
+	var app =
+    	new Vue({
+          el: '#app',
+          data: {
+            title : '滴滴快车，快乐出行，快享出发',
+            phone : '',
+            btnActive : false,
+            modalShow : false,
+            modalMsg : "",
+            show : false,
+            errmsg : "",
+            amount :'',
+            coupon_list :[]
+          },
+          filters:{
+            cutBefore : function (value) {
+              return value.toString().substring(0,1);//返回的数据类型是Number，需要转换成字符串才能截取
+            },
+            cutAfter : function (value) {
+              return value.toString().substring(1);
+            }
+          },
+          methods: {
+            getBtnClick : function(){
+              var mobile = /^(13[0-9]{9})|(18[0-9]{9})|(14[0-9]{9})|(17[0-9]{9})|(15[0-9]{9})$/;
+              if(!mobile.test(this.phone)){
+                this.modalMsg =  "请输入正确的手机号码！";
+                this.modalShow = true;
+              }
+              else {
+                this.show = true;
+                var _this = this ;
+                var url ='';
+                if( this.phone === '15000000000'){
+                  url = './js/activity2.json';
+                }
+                else{
+                  url = './js/activity.json';
+                }
+                axios({
+                    method: 'post',
+                    url : url,
+                    params: {
+                      phone : this.phone
+                    }
+                }).then( function (response) {
+
+                  /*if( response.data.activity[0].errno === 6 ){
+                    _this.errmsg = response.data.activity[0].errmsg;
+                    console.log(_this.errmsg);
+                  }
+
+                  else if( response.data.activity[1].errno === 7 ){
+                    _this.errmsg = response.data.activity[1].errmsg;
+                    console.log(_this.errmsg);
+                  }*/
+                  if( response.data.errno === 6 ){
+                    _this.errmsg = response.data.errmsg;
+                    console.log(_this.errmsg);
+                  }
+                  else{
+                    _this.amount = response.data.amount;
+                    _this.phone = response.data.phone;
+                    _this.coupon_list = response.data.coupon_list;
+                    console.log(response.data);
+                  }
+
+                }).catch( function (error) {
+                    console.log(error);
+                });
+              }
+            },
+            modalClick : function (data) { // 响应组件的呼喊
+                this.modalShow = false;
+            }
+          },
+          watch: {
+            phone : function ( newVal , oldVal ) {
+              newVal.length > 0 ? this.btnActive = true :  this.btnActive = false ;
+            }
+          },
+          created: function () {
+
+          },
+          mounted: function () {
+          }
+    });
+</script>
+</body>
+</html>

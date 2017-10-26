@@ -1,0 +1,28 @@
+{
+  "errno": 0,
+  "errmsg": "成功 ",
+  "amount": 40,
+  "phone": "18565091288",
+  "coupon_list": [
+      {
+          "productid": "200",
+          "amount": 30,
+          "name": "专车券",
+          "deadline": "2017-10-30",
+          "remark": "最高抵扣30元",
+          "discount": 85,
+          "valid_logo_url": "https://coupons.didistatic.com/static/coupons/20-taxi-valid.png",
+          "invalid_logo_url": "https://coupons.didistatic.com/static/coupons/20-taxi-invalid.png"
+      },
+      {
+          "productid": "210",
+          "amount": 10,
+          "name": "快车券",
+          "deadline": "2017-10-30",
+          "remark": "限支付宝app快车订单，最高抵10元",
+          "discount": 95,
+          "valid_logo_url": "https://coupons.didistatic.com/static/coupons/99-taxi-valid.png",
+          "invalid_logo_url": "https://coupons.didistatic.com/static/coupons/99-taxi-invalid.png"
+      }
+  ]
+}
